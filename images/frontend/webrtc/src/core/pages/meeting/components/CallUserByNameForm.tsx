@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Socket } from "socket.io-client";
 import Peer from "simple-peer";
 
-function CallUserByNameForm({ socket, userVideo, username, stream, setCall, setNotification, connectionRef }: 
-    { socket: Socket, userVideo: React.RefObject<HTMLVideoElement>, username: string, stream: MediaStream, setCall: Function,setNotification: Function, connectionRef: React.MutableRefObject<Peer.Instance | null> }) {
+function CallUserByNameForm({ socket, userVideo, username, stream, setCall, setNotification }: 
+    { socket: Socket, userVideo: React.RefObject<HTMLVideoElement>, username: string, stream: MediaStream, setCall: Function,setNotification: Function}) {
     const [usernameToCall, SetUsernameToCall] = useState<string|undefined>(undefined);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -40,6 +40,8 @@ function CallUserByNameForm({ socket, userVideo, username, stream, setCall, setN
             setNotification(`You have a call from ${data.from}`);
             
         });
+
+        
 
     return ( 
         <form onSubmit={handleSubmit}>
