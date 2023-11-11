@@ -1,0 +1,67 @@
+.NotificationContainer{
+    display: flex;
+    width: 40vw;
+    background-color: #495057;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 25px;
+    border: 1.5px solid #6c757d;
+    box-shadow: 1px 2px 3px rgba(136, 125, 125, 0.25);
+    h2{
+        color: #dee2e6;
+        font-weight: bold;
+        font-size: 25pt;
+    }
+
+    div{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+
+        button{
+            padding: .5em 1em;
+            margin: 1em;
+            border-radius: 25px ;
+            text-align: center;
+            font-weight: bold;
+            color: #dee2e6;
+            background-color: #343a40;
+            border: 1.5px solid #6c757d;
+            box-shadow: 3px 4px 8px rgba(136, 125, 125, 0.25);
+
+            &:hover{
+            background-color: #495057;
+            }
+        }
+
+        .acceptButton:hover{
+                color: #00ac8c;
+            }
+
+            
+
+        .declineButton:hover{
+                color: #ef3340;
+            }
+
+    }
+;
+}
+
+.alertContainer{
+     display: flex;
+    width: 40vw;
+    background-color: #495057;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 25px;
+    border: 1.5px solid #6c757d;
+    box-shadow: 1px 2px 3px rgba(136, 125, 125, 0.25);
+    h2{
+        color: #ef3e4a;
+        font-weight: bold;
+        font-size: 25pt;
+    }
+}

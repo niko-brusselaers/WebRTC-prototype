@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io,Socket } from "socket.io-client";
 import * as process from 'process';
 import Peer from "simple-peer";
@@ -6,6 +6,8 @@ import CallUserByNameForm from "./components/CallUserByNameForm";
 import SelectUsernameForm from "./components/SelectUsernameForm";
 import CallNotification from "./components/CallNotification";
 import { ICall } from "../../shared/interfaces/ICall";
+import styles from "./css/Meeting.module.scss";
+import ErrorMessage from "./components/ErrorMessage";
 
 (window as any).global = window;
 (window as any).process = process;
@@ -32,6 +34,7 @@ function Meeting() {
     const [notification, setNotification] = useState<string | undefined>(undefined);
     const [call, setCall] = useState<ICall | undefined>(undefined);
     const connectionRef = useRef<Peer.Instance | null>(null);
+    const [callActive, setCallActive] = useState<boolean>(false);
     
 
     //get user media and set stream to video element
@@ -52,13 +55,32 @@ function Meeting() {
 
     
     return ( 
-        <div>
+        <div className={styles.meetingContainer}>
             
-            <h2>{errorMessage ? errorMessage : null}</h2>
+            {errorMessage ? <ErrorMessage errorMessage={errorMessage}/>
+            
+            : 
+            null}
+
+            {notification ? 
+            <CallNotification call={call} 
+             connectionRef={connectionRef} stream={stream!}
+             notification={notification} setCall={setCall} 
+             setNotification={setNotification} socket={socket} 
+             userVideo={userVideo} setCallActive={setCallActive}
+            />
+            :
+            null
+            
+            }
+
+            <div className={styles.videoContainer}>
+                <video ref={myVideo} muted autoPlay className={callActive ? styles.PictureInPictureVideo : styles.overlayVideo}></video>
+                <video ref={userVideo} muted autoPlay className={callActive ? styles.overlayVideo : styles.hiddenVideo}></video>
+            </div>
 
             {username ? 
                 <>
-                    <h2>Welcome {username}</h2> 
                     <CallUserByNameForm username={username} 
                      setCall={setCall} setNotification={setNotification} 
                      socket={socket} stream={stream!} userVideo={userVideo}
@@ -72,20 +94,9 @@ function Meeting() {
                 />
             }
 
-            {notification ? 
-            <CallNotification call={call} 
-             connectionRef={connectionRef} stream={stream!}
-             notification={notification} setCall={setCall} 
-             setNotification={setNotification} socket={socket} 
-             userVideo={userVideo}
-            />
-            :
-            null
             
-            }
             
-            <video ref={myVideo} muted autoPlay style={{ width: "300px" }}></video>
-            <video ref={userVideo} muted autoPlay style={{ width: "300px" }}></video>
+            
 
         </div>
      );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Socket } from "socket.io-client";
 import Peer from "simple-peer";
+import styles from "../css/Form.module.scss";
 
 function CallUserByNameForm({ socket, userVideo, username, stream, setCall, setNotification }: 
     { socket: Socket, userVideo: React.RefObject<HTMLVideoElement>, username: string, stream: MediaStream, setCall: Function,setNotification: Function}) {
@@ -43,11 +44,16 @@ function CallUserByNameForm({ socket, userVideo, username, stream, setCall, setN
 
         
 
-    return ( 
-        <form onSubmit={handleSubmit}>
-            <input type="text" placeholder="Enter username" onChange={(e) => SetUsernameToCall(e.target.value)}/>
-            <button type="submit"  >Call</button>
-        </form>
+    return (
+        <div className={styles.formContainer}>
+            <h2>please enter the username of who you like to call</h2>
+
+            <form onSubmit={handleSubmit}>
+                <input type="text" placeholder="Enter username" onChange={(e) => SetUsernameToCall(e.target.value)}/>
+                <button type="submit"  >Call</button>
+            </form>
+        </div>
+        
      );
 }
 

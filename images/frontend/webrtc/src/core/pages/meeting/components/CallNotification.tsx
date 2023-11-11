@@ -1,10 +1,11 @@
 import { Socket } from 'socket.io-client';
 import Peer from 'simple-peer';
 import { ICall } from '../../../shared/interfaces/ICall';
+import Styles  from '../css/Notification.module.scss';
 
 
-function CallNotification({socket, setCall,notification, setNotification, userVideo, stream,call, connectionRef}: 
-    {socket:Socket, setCall: Function,notification:string, setNotification: Function, userVideo: React.RefObject<HTMLVideoElement>, stream: MediaStream, call: ICall | undefined, connectionRef: React.MutableRefObject<Peer.Instance | null>}) {
+function CallNotification({socket, setCall, setCallActive ,setNotification, notification, userVideo, stream, call, connectionRef}: 
+    {socket:Socket, setCall: Function,setCallActive:Function, setNotification: Function,notification:string, userVideo: React.RefObject<HTMLVideoElement>, stream: MediaStream, call: ICall | undefined, connectionRef: React.MutableRefObject<Peer.Instance | null>}) {
     const acceptCall = () => {
         // Create a new SimplePeer instance for the accepted call
         const peer = new Peer({ initiator: false, trickle: false, stream });
@@ -26,6 +27,7 @@ function CallNotification({socket, setCall,notification, setNotification, userVi
                 peer.signal(call.signal);
                 connectionRef.current = peer;
             }
+        setCallActive(true);
         setNotification(undefined);
     };
 
@@ -36,12 +38,12 @@ function CallNotification({socket, setCall,notification, setNotification, userVi
 
 
     return ( 
-        <div>
-            <p>{notification}</p> 
-                <div>
-                    <button onClick={acceptCall}>accept</button>
-                    <button onClick={declineCall}>decline</button>
-                </div>
+        <div className={Styles.NotificationContainer}>
+            <h2>{notification}</h2> 
+            <div>
+                    <button onClick={acceptCall} className={Styles.acceptButton}>accept</button>
+                    <button onClick={declineCall} className={Styles.declineButton}>decline</button>
+            </div>
         </div>
      );
 }
