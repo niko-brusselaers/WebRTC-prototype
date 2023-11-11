@@ -1,8 +1,14 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { io,Socket } from "socket.io-client";
+import * as process from 'process';
 import Peer from "simple-peer";
 import ILoginResponse from "../../shared/interfaces/IResponses";
 
+(window as any).global = window;
+(window as any).process = process;
+(window as any).Buffer = [];
+
+//create socket connection
 const socket: Socket = io("localhost:4000");
 
 function Meeting() {
