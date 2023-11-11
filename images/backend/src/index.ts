@@ -71,10 +71,21 @@ io.on('connection', (socket: Socket) => {
         socket.broadcast.emit('callended')
     })
 
-    socket.on('calluser', ({ userToCall, signalData, from, name }) => {
-        console.log('calluser', userToCall, signalData, from, name);
+    socket.on('callUser', ({ userToCall, signalData, from, name }) => {
         
-        io.to(userToCall).emit('calluser', { signal: signalData, from, name })
+        // find userid of user to call
+        let UserToCallId = users.find(user => user.username === userToCall)?.id;
+        
+        // if userId exists, send callUser event to user
+        if (UserToCallId) {
+            io.to(UserToCallId.toString()).emit('callUser', { signal: signalData, from, name })
+        // else send error message to user who initiated the call
+        } else{
+            socket.to(socket.id).emit('callUser', {
+                message: 'User not found',
+                statuscode: 404
+            })
+        }
     })
 
     socket.on('answercall', (data) => {
