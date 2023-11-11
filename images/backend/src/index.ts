@@ -1,4 +1,4 @@
-import express from 'express';
+import express from 'express'
 import http from 'http';
 import cors from 'cors';
 import { Server, Socket } from 'socket.io';
@@ -19,7 +19,7 @@ const users:IUser[] = [];
 
 app.use(cors())
 
-app.get('/', (req:any, res:any) => {
+app.get('/', (req:Response, res:any) => {
     res.send('webrtc backend is running')
 });
 

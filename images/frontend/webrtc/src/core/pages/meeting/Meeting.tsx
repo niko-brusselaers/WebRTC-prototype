@@ -1,8 +1,13 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io,Socket } from "socket.io-client";
 import * as process from 'process';
 import Peer from "simple-peer";
-import ILoginResponse from "../../shared/interfaces/IResponses";
+import CallUserByNameForm from "./components/CallUserByNameForm";
+import SelectUsernameForm from "./components/SelectUsernameForm";
+import CallNotification from "./components/CallNotification";
+import { ICall } from "../../shared/interfaces/ICall";
+import styles from "./css/Meeting.module.scss";
+import ErrorMessage from "./components/ErrorMessage";
 
 (window as any).global = window;
 (window as any).process = process;
@@ -14,7 +19,6 @@ const socket: Socket = io("localhost:4000");
 function Meeting() {
     //username usetate
     const [username, setUsername] = useState<string | undefined>();
-    const [usernameInput, setUsernameInput] = useState<string | undefined>();
 
     //error usestate
     const [errorMessage, setErrorMessage] = useState<string | undefined>();
@@ -28,69 +32,10 @@ function Meeting() {
 
     //call usestate
     const [notification, setNotification] = useState<string | undefined>(undefined);
-    const [usernameToCall, setUsernameToCall] = useState<string | undefined>("");
-    const [call, setCall] = useState<{ from: string, name: string, signal: any } | undefined>(undefined);
+    const [call, setCall] = useState<ICall | undefined>(undefined);
     const connectionRef = useRef<Peer.Instance | null>(null);
-
-
-
-    //select username and emit to server
-    const selectUsername = (event: FormEvent) => {
-        event.preventDefault();
-        socket.emit("login", {newUser: usernameInput});
-    }
-
-    const callUser = (event: FormEvent) => {
-        event.preventDefault();
-        if (usernameToCall) {
-            console.log("make call");
-        
-            const peer = new Peer({ initiator: true, trickle: false, stream });
-
-            peer.on('signal', (data) => {
-                socket.emit('callUser', { userToCall: usernameToCall, signalData: data, from: username });
-                setCall({ from: username!, name: usernameToCall, signal: data });
-            });
-
-            peer.on('stream', (currentStream) => {
-                console.log("stream");
-                if (userVideo.current) {
-                    userVideo.current.srcObject = currentStream;
-                }
-            });
-
-            socket.on('callAccepted', (signal) => {
-                // Move this line after setting up the 'signal' event listener
-                peer.signal(signal);
-            });
-
-            connectionRef.current = peer;
-        }
-    };
-
-    const acceptCall = () => {
-        // Create a new SimplePeer instance for the accepted call
-        const peer = new Peer({ initiator: false, trickle: false, stream });
-
-        peer.on('signal', (data) => {
-            socket.emit('answerCall', { signal: data, to: call!.from });
-        });
-
-        peer.on('stream', (currentStream) => {
-            if (userVideo.current) {
-                userVideo.current.srcObject = currentStream;
-            }
-        });
-
-        console.log(call);
-
-        // Check the signalingState before calling signal
-            if (call) {
-                peer.signal(call.signal);
-                connectionRef.current = peer;
-            }
-
-    };
+    const [callActive, setCallActive] = useState<boolean>(false);
+    
 
     //get user media and set stream to video element
     useEffect(() => {
@@ -108,90 +53,52 @@ function Meeting() {
 
     },[]);
 
-    //listen for any incoming socket events
-    useEffect(() => {
-
-        //listen for login event
-        socket.on('login', (data: ILoginResponse) => {
-            
-            //if statuscode is 200, set username and clear possibel error message
-            if (data.statuscode === 200) {
-                setUsername(data.username);
-                setErrorMessage(undefined);
-            } else {
-                //if statuscode is not 200, set and display error message
-                setErrorMessage(data.data)
-            }
-        });
-
-        socket.on('callUser', (data:any) => {
-            // set the call data to state
-            setCall({ from: data.from, name: username!, signal: data.signal })
-            // set the notification data to state
-            setNotification(`You have a call from ${data.from}`);
-            
-        });
-
-        socket.on('callAccepted', (signal) => {
-            // Create a new SimplePeer instance for the accepted call
-            const peer = new Peer({ initiator: true, trickle: false, stream });
-
-            // Handle the signal from the accepted call
-            peer.signal(signal);
-
-            // Set up event listeners for the peer connection
-            peer.on('stream', (currentStream) => {
-                if (userVideo.current) {
-                    userVideo.current.srcObject = currentStream;
-                }
-            });
-
-            // Save the peer connection in the useRef for later reference
-            connectionRef.current = peer;
-        });
-
-    },[]);
 
     
     return ( 
-        <div>
-            <h1>Meeting</h1>
-            {
-                errorMessage ? <h2>{errorMessage}</h2> : null
-            }
-
-            {username ? 
-                <>
-                <h2>Welcome {username}</h2> 
+        <div className={styles.meetingContainer}>
             
-                <form onSubmit={callUser}>
-                    <input type="text" placeholder="Enter username" onChange={(e) => setUsernameToCall(e.target.value)}/>
-                    <button type="submit"  >Call</button>
-                </form>
-                </>
-                : 
-                <form onSubmit={selectUsername}>
-                        <input type="text" placeholder="Enter your name" onChange={(e) => setUsernameInput(e.target.value)} />
-                        <button type="submit">Submit</button>
-                </form>
-            }
+            {errorMessage ? <ErrorMessage errorMessage={errorMessage}/>
+            
+            : 
+            null}
 
             {notification ? 
-            <>
-                <p>{notification}</p> 
-                <div>
-                    <button onClick={acceptCall}>accept</button>
-                </div>
-            </>
-
-            : 
-            
+            <CallNotification call={call} 
+             connectionRef={connectionRef} stream={stream!}
+             notification={notification} setCall={setCall} 
+             setNotification={setNotification} socket={socket} 
+             userVideo={userVideo} setCallActive={setCallActive}
+            />
+            :
             null
             
             }
+
+            <div className={styles.videoContainer}>
+                <video ref={myVideo} muted autoPlay className={callActive ? styles.PictureInPictureVideo : styles.overlayVideo}></video>
+                <video ref={userVideo} muted autoPlay className={callActive ? styles.overlayVideo : styles.hiddenVideo}></video>
+            </div>
+
+            {username ? 
+                <>
+                    <CallUserByNameForm username={username} 
+                     setCall={setCall} setNotification={setNotification} 
+                     socket={socket} stream={stream!} userVideo={userVideo}
+                     setCallActive={setCallActive}
+                    />
+                </>
+                
+                :
+
+                <SelectUsernameForm socket={socket} 
+                 setErrorMessage={setErrorMessage} setUsername={setUsername} 
+                />
+            }
+
             
-            <video ref={myVideo} muted autoPlay style={{ width: "300px" }}></video>
-            <video ref={userVideo} muted autoPlay style={{ width: "300px" }}></video>
+            
+            
 
         </div>
      );
