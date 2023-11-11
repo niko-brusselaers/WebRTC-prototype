@@ -35,5 +35,24 @@
 
         - fixed bug where user who initated call would get error about process not being defined
 
-        
-    
+## [0.0.4]
+
+## added
+
+    backend:
+
+        - websocket login:
+            - checks if username is avaible
+            - stores username in server variable
+            - sends response to frontend
+## changed
+
+    backend:
+
+        - websocket disconnect:
+            - now removes user data when user disconnects
+        - websocket callUser:
+            - finds userId of user who is being called
+            - send error message to original caller if user is not found
+        - websocket answerCall:
+            - finds userId of user who is being called
