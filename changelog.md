@@ -56,3 +56,25 @@
             - send error message to original caller if user is not found
         - websocket answerCall:
             - finds userId of user who is being called
+
+## [0.0.5]
+
+### changed
+
+    frontend:
+
+        - moved following functionality to its own component:
+            - selectUsername
+            - callUser
+            - answerCall
+            - errorMessage
+### added
+
+    frontend:
+
+        added styling to components:
+            - Meeting
+            - SelectUsername
+            - CallUser
+            - Notification
+            - ErrorMessage
