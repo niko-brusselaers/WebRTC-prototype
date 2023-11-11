@@ -65,6 +65,9 @@ io.on('connection', (socket: Socket) => {
     })
 
     socket.on('disconnect', () => {
+        // remove user from users array
+        let user = users.find(user => user.id === socket.id);
+        users.splice(users.findIndex(user => user.id === socket.id), 1);
         socket.broadcast.emit('callended')
     })
 
