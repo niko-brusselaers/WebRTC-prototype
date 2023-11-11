@@ -88,7 +88,13 @@ io.on('connection', (socket: Socket) => {
         }
     })
 
-    socket.on('answercall', (data) => {
-        io.to(data.to).emit('callaccepted', data.signal)
+    socket.on('answerCall', (data) => {
+        // find userid of user to call
+        let UserToCallId = users.find(user => user.username === data.to)?.id;
+        // if userId exists, send callAccepted event to user
+        if (UserToCallId) {
+            io.to(UserToCallId.toString()).emit('callAccepted', data.signal)
+            
+        }
     })
 })
