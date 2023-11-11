@@ -53,6 +53,7 @@ function Meeting() {
 
     },[]);
 
+
     
     return ( 
         <div className={styles.meetingContainer}>
@@ -84,6 +85,7 @@ function Meeting() {
                     <CallUserByNameForm username={username} 
                      setCall={setCall} setNotification={setNotification} 
                      socket={socket} stream={stream!} userVideo={userVideo}
+                     setCallActive={setCallActive}
                     />
                 </>
                 

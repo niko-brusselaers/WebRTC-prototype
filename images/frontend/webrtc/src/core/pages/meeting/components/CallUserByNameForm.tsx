@@ -3,8 +3,8 @@ import { Socket } from "socket.io-client";
 import Peer from "simple-peer";
 import styles from "../css/Form.module.scss";
 
-function CallUserByNameForm({ socket, userVideo, username, stream, setCall, setNotification }: 
-    { socket: Socket, userVideo: React.RefObject<HTMLVideoElement>, username: string, stream: MediaStream, setCall: Function,setNotification: Function}) {
+function CallUserByNameForm({ socket, userVideo, username, stream, setCall,setCallActive, setNotification }: 
+    { socket: Socket, userVideo: React.RefObject<HTMLVideoElement>, username: string, stream: MediaStream, setCall: Function,setCallActive:Function,setNotification: Function}) {
     const [usernameToCall, SetUsernameToCall] = useState<string|undefined>(undefined);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -21,7 +21,6 @@ function CallUserByNameForm({ socket, userVideo, username, stream, setCall, setN
 
             //on stream, set stream to userVideo
             peer.on('stream', (currentStream) => {
-                console.log("stream");
                 if (userVideo.current) {
                     userVideo.current.srcObject = currentStream;
                 }
@@ -30,6 +29,8 @@ function CallUserByNameForm({ socket, userVideo, username, stream, setCall, setN
             //on callaccepted, signal to server that call is accepted and send signal to other user
             socket.on('callAccepted', (signal) => {
                 peer.signal(signal);
+                setCallActive(true);
+                
             });
         }
     };
