@@ -3,4 +3,4 @@ services:
     type: web
     buildCommand: ./images/frontend
     startCommand: npm start
-
+    runtime: node
