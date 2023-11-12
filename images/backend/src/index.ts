@@ -6,7 +6,7 @@ import { IUser } from './shared/interfaces/IUser';
 
 const app = express();
 const server = http.createServer(app);
-const Port = process.env.PORT || 4000;
+const Port = 4000;
 const io = new Server(server, {
   cors: {
     origin: "*",
