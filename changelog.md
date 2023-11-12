@@ -78,3 +78,34 @@
             - CallUser
             - Notification
             - ErrorMessage
+
+## [0.0.6]
+
+### added
+
+    - dockerfile for backend and frontend of application
+    - docker-compose file to run both containers at the same time
+
+### changed
+
+    frontend:
+
+        changed following functionality to its own component:
+            - SelectUsername
+            - CallUser
+            - Notification and AnswerCall
+            - ErrorMessage
+
+### fixed
+
+    frontend:
+
+        - fixed bug where user would not be able to call other user after answering a call
+        - fixed bug where user video would not recenter after other user disconnects
+        - hardcoded the url of the backend websocket
+
+### removed
+
+    frontend:
+
+        - temporary .env file
