@@ -7,7 +7,7 @@ services:
       - key: BACKEND_URL
         fromService:
           name: backend
-          internalPort: 4000
+          property: url  # Change 'property' to the appropriate property of the backend service
 
   - name: backend
     type: web
