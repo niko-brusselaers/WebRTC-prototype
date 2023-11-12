@@ -22,6 +22,18 @@ function CallNotification({socket, setCall, setCallActive ,setNotification, noti
             }
         });
 
+        //set up event when call is closed
+        peer.on('close', () => {
+            setCallActive(false);
+            setCall(undefined);
+            // Check if the peer instance is still available
+            if (connectionRef.current) {
+                // Destroy the peer instance
+                peer.destroy();
+                connectionRef.current = null;
+            }
+        });
+
         // Check the signalingState before calling signal
             if (call) {
                 peer.signal(call.signal);

@@ -51,9 +51,17 @@ function Meeting() {
             setErrorMessage('Error accessing camera and microphone. Please grant the necessary permissions.');
         });
 
+
     },[]);
 
-
+    useEffect(() => {
+            window.addEventListener('beforeunload', (event) => {
+                if(connectionRef.current){
+                    connectionRef.current.end();
+                    connectionRef.current.destroy();
+                }
+            });
+    });
     
     return ( 
         <div className={styles.meetingContainer}>
@@ -85,7 +93,7 @@ function Meeting() {
                     <CallUserByNameForm username={username} 
                      setCall={setCall} setNotification={setNotification} 
                      socket={socket} stream={stream!} userVideo={userVideo}
-                     setCallActive={setCallActive}
+                     setCallActive={setCallActive} connectionRef={connectionRef}
                     />
                 </>
                 

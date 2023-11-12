@@ -3,13 +3,15 @@ import { Socket } from "socket.io-client";
 import Peer from "simple-peer";
 import styles from "../css/Form.module.scss";
 
-function CallUserByNameForm({ socket, userVideo, username, stream, setCall,setCallActive, setNotification }: 
-    { socket: Socket, userVideo: React.RefObject<HTMLVideoElement>, username: string, stream: MediaStream, setCall: Function,setCallActive:Function,setNotification: Function}) {
+function CallUserByNameForm({ socket, userVideo, username, stream, setCall,setCallActive, setNotification, connectionRef }: 
+    { socket: Socket, userVideo: React.RefObject<HTMLVideoElement>, username: string, stream: MediaStream, setCall: Function,setCallActive:Function,setNotification: Function, connectionRef: React.MutableRefObject<Peer.Instance | null>}) {
     const [usernameToCall, SetUsernameToCall] = useState<string|undefined>(undefined);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        
         if (usernameToCall) {
+            
             // Create a new SimplePeer instance for the call
             const peer = new Peer({ initiator: true, trickle: false, stream });
 
@@ -26,12 +28,26 @@ function CallUserByNameForm({ socket, userVideo, username, stream, setCall,setCa
                 }
             });
 
+            //set up event when call is closed  
+            peer.on('close', () => {
+                setCallActive(false);
+                setCall(undefined);
+                // Check if the peer instance is still available
+                if (connectionRef.current) {
+                    // Destroy the peer instance
+                    peer.destroy();
+                    connectionRef.current = null;
+                }
+            });
+
             //on callaccepted, signal to server that call is accepted and send signal to other user
             socket.on('callAccepted', (signal) => {
                 peer.signal(signal);
                 setCallActive(true);
-                
             });
+
+            connectionRef.current = peer;
+
         }
     };
 
