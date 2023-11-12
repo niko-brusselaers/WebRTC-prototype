@@ -14,7 +14,7 @@ import ErrorMessage from "./components/ErrorMessage";
 (window as any).Buffer = [];
 
 //create socket connection
-const socket: Socket = io("localhost:4000");
+const socket: Socket = io(process.env.BACKEND_URL!);
 
 function Meeting() {
     //username usetate
