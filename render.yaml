@@ -7,7 +7,7 @@ services:
       - key: BACKEND_URL
         fromService:
           name: backend
-          property: host:4000
+          property: host
 
   - name: backend
     type: web
