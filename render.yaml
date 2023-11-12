@@ -1,0 +1,15 @@
+services:
+  - name: frontend
+    type: web
+    buildCommand: ./images/frontend
+    startCommand: npm start
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          name: backend
+          internalPort: 4000
+
+  - name: backend
+    type: web
+    buildCommand: ./images/backend
+    startCommand: npm start
