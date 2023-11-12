@@ -3,13 +3,4 @@ services:
     type: web
     buildCommand: ./images/frontend
     startCommand: npm start
-    envVars:
-      - key: BACKEND_URL
-        fromService:
-          name: backend
-          property: host
 
-  - name: backend
-    type: web
-    buildCommand: ./images/backend
-    startCommand: npm start
